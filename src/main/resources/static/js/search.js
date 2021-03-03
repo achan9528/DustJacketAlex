@@ -50,30 +50,90 @@ $(document).ready(function(){
 			}
 		}
 		
+		$("#searchForm").toggle("explode");
 		$.ajax({
 			url: "/searchAPI",
 			data: {'searchBar': t},
 			success: function(result){
 				console.log("success");
+				
 				var temp = JSON.parse(result);
 				data = temp;		
 				console.log(temp);
 				console.log(temp[option]['items'][0].name);
 				$("#gallery").empty();
+				if (option=="tracks"){
+					var galleryHeader = "<div id='galleryHeader' class='row' style='display:none;'><h2 class='col'>Song Title <span class='text-muted'>& Related Artists </span><span class='text-info'>& Related Album</span></h2><h2 class='col-6 text-right' id='searchHeader'>Search</h2></div>";
+				} else{
+					var galleryHeader = "<div id='galleryHeader' class='row' style='display:none;'><h2 class='col'>Artist <span class='text-muted'>& Related Genres</span></h2><h2 class='col-6 text-right' id='searchHeader'>Search</h2></div>";
+				}
+				$("#gallery").append(galleryHeader);
+				$("#galleryHeader").fadeIn("slow");
+//				$("#searchHeader").fadeIn("slow");
+				
 				for (var i = 0; i < temp[option]['items'].length; i++){
 
 //				<h3 id="song1"></h3>
 //				<img style="width: 40px; height: 40px" src="" id="album_img_1">					
-					var section = `#artist_${i}`;
-					var sectionHTML = `<div style="display:none;" id=artist_${i}></div>`
-					var artistName = temp[option]['items'][i].name;
-					var artistNameHTML = `<h3 id=artist_${i}>${artistName}</h3>`;
+					var section = `#section_${i}`;
+					var sectionHTML = `<div class='searchData' style="display:none;" id=section_${i}></div>`
+					var firstField = temp[option]['items'][i].name;
+					var secondField = "";
+					var thirdField = "";
+					if (option=='tracks'){
+						var secondFieldList = temp[option]['items'][i]['artists'];
+						for (var n = 0; n < secondFieldList.length; n++){
+							secondField += secondFieldList[n].name + ", ";
+						}
+						
+						secondField = secondField.substring(0, secondField.length - 2);
+						
+						var thirdField = temp[option]['items'][i]['album'].name;
+//						for (var n = 0; n < thirdFieldList.length; n++){
+//							thirdField += thirdFieldList[n].name + ", ";
+//						}
+						
+//						thirdField = thirdField.substring(0, thirdField.length - 2);
+					} else{
+						console.log("made it");
+						var secondFieldList = temp[option]['items'][i]['genres'];
+						for (var n = 0; n < secondFieldList.length; n++){
+							secondField += secondFieldList[n] + ", ";
+						}
+						
+						secondField = secondField.substring(0, secondField.length - 2);
+//						
+//						var thirdField = temp[option]['items'][i]['album'].name;
+////						for (var n = 0; n < thirdFieldList.length; n++){
+////							thirdField += thirdFieldList[n].name + ", ";
+////						}
+//						
+////						thirdField = thirdField.substring(0, thirdField.length - 2);
+						
+					}
 					
+					
+					var html = `
+						<div class="expandable" id="expandable_${i}">
+						<h4 class="expandable" id=artist_${i}>${firstField}
+						<span class="text-muted expandable">${secondField}</span>
+						<span class="text-info expandable">${thirdField}</span>
+						</h4>
+						</div>`;
+						
+					var testHTML = `<p style='display:none;' id='test_${i}'>test</p>`
+					var htmlID = `#expandable_${i}`
 					
 					$("#gallery").append(sectionHTML);
-					$(section).append(artistNameHTML);
-					$(section).delay(100).fadeIn("slow", function(){});
+					$(section).append(html);
+					$(htmlID).append(testHTML);
+
 				}
+				
+				$(".searchData").each(function(){
+						$(this).fadeIn("slow");
+//						setTimeout(function(){$(this).fadeIn("slow");}, 500);
+				});
 				
 			},
 			error: function(result){
@@ -83,7 +143,24 @@ $(document).ready(function(){
 		})
 	})
 	
+	// show line item details
+	$(document.body).on("click", "#gallery .expandable",function(){
+		console.log("clicked");
+		if($(this).prop("tagName") == "H4"){
+			$(this).parent().children("p").slideToggle("slow");	
+		} else if($(this).prop("tagName") == "SPAN"){
+			console.log($(this).parent().parent().children("p").first().prop("id"));
+			$(this).parent().parent().children("p").first().slideToggle("slow");
+		}
+		
+	});
 	
+		// show line item details
+	$(document.body).on("click", "#searchHeader",function(){
+		console.log("clicked");
+		$("#searchForm").toggle("explode");
+//		$("#gallery").toggle("explode");
+	});
 	
-	
+	$(document).click(function(e){ console.log(e.target); });
 })   

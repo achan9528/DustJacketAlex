@@ -27,7 +27,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 @Controller
 public class TestController {
 	
-	private String spotifyAccessCode = "Bearer BQDG9nSrLnQ9p6FFNCxZ35dGwRLgY2Ivr5ouERqXxL6pMZCYdY6qDkKibGsAgJYvP5VKfN4q6sjjOZZwwsM";
+	private String spotifyAccessCode = "Bearer BQCz5yh0My5FKwxxlRqoVmFTf6bOQPs6taGMAZu_gLktR_Ca3QVZsYxCVSbJZi9iPKUhYMyss-E5OrDJFzw";
 	
 	@RequestMapping("/")
 	public String index() {
@@ -52,6 +52,8 @@ public class TestController {
 		try {
 			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
 //			model.addAttribute("apiData", response.body());
+			// save spotifySongID
+			// song name, artist, album ,genre
 			return response.body();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
