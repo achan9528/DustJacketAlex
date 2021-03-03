@@ -26,14 +26,17 @@ import java.net.http.HttpResponse.BodyHandlers;
 //JSON Parsing library
 @Controller
 public class TestController {
+	
+	private String spotifyAccessCode = "Bearer BQDG9nSrLnQ9p6FFNCxZ35dGwRLgY2Ivr5ouERqXxL6pMZCYdY6qDkKibGsAgJYvP5VKfN4q6sjjOZZwwsM";
+	
 	@RequestMapping("/")
 	public String index() {
 		return "search.jsp";
 	}
 	
-	@RequestMapping("/searchAPI")
+	@RequestMapping("/searchAPITest")
 	@ResponseBody
-	public String signIn(Model model,
+	public String searchTracks(Model model,
 			@RequestParam("searchBar") String keywords) {
 		
 		String kws = convertToCSL(keywords);
@@ -43,7 +46,39 @@ public class TestController {
 		HttpRequest request = HttpRequest.newBuilder()
 				.header("Accept", "application/json")
 				.header("Content-Type", "application/json")
-				.header("Authorization", "Bearer BQDJruAwX_5oxezOWgLQnlxRc7zloPnGWEwbyie-nzsl7lA0fpSwG32c9PAzVzyqDySAfCeWVpsJ--mWoyM")
+				.header("Authorization", spotifyAccessCode)
+				.uri(URI.create(uri))
+				.build();
+		try {
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+//			model.addAttribute("apiData", response.body());
+			return response.body();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			model.addAttribute("apiData", e);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			model.addAttribute("apiData", e);
+		}
+		
+		return "search.jsp";
+	}
+	
+	@RequestMapping("/searchAPI")
+	@ResponseBody
+	public String searchArtists(Model model,
+			@RequestParam("searchBar") String keywords) {
+		
+		String kws = convertToCSL(keywords);
+		String uri = "https://api.spotify.com/v1/search?type=artist,track&q=" + kws;
+		
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest.newBuilder()
+				.header("Accept", "application/json")
+				.header("Content-Type", "application/json")
+				.header("Authorization", spotifyAccessCode)
 				.uri(URI.create(uri))
 				.build();
 		try {

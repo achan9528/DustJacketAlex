@@ -12,6 +12,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript" src="js/search.js"></script>
+    <script>
+      function play() {
+        var audio = document.getElementById("audio");
+        audio.play();
+      }
+    </script>
     <title>DskJckt</title>
 </head>
 <body>
@@ -26,13 +32,17 @@
 					<label for="searchBar">Search:</label>
 					<input type="text" name="searchBar" id="searchBar">
 				</div>
+				<div class="form-group">
+					<label class="btn btn-outline-success" for="searchSongs">By Song</label>
+					<input type="radio" class="btn btn-check" name="searchBarOption" id="searchSongs" autocomplete="off" value="tracks">
+					
+					<label class="btn btn-outline-danger" for="searchArtists">By Artist</label>
+					<input type="radio" class="btn btn-check" name="searchBarOption" id="searchArtists" autocomplete="off" value="artists" checked>
+				</div>
 				<button class="btn btn-primary">Submit</button>
 			</form>
 			<div>
-				<p id="apiData">
-					<c:out value="${apiData}"></c:out>
-				</p>
-				<div id="gallery">
+				<div id="gallery" style="display:block;">
 				</div>
 			</div>
 		</div>
