@@ -142,16 +142,14 @@ $(document).ready(function(){
 			}
 		})
 	})
-	
+
 	// show line item details
-	$(document.body).on("click", "#gallery .expandable",function(){
-		console.log("clicked");
-		if($(this).prop("tagName") == "H4"){
-			$(this).parent().children("p").slideToggle("slow");	
-		} else if($(this).prop("tagName") == "SPAN"){
-			console.log($(this).parent().parent().children("p").first().prop("id"));
-			$(this).parent().parent().children("p").first().slideToggle("slow");
-		}
+	$(document.body).on("click","h4",function(){
+		var temp = $(this).prop("id").split("_");
+		var temp = temp[1];
+		var idString = "#test_"+ temp;
+		$(idString).slideToggle("slow");
+		return;
 		
 	});
 	
