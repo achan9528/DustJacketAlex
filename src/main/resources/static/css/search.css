@@ -1,20 +1,8 @@
-li:hover{
-	color: blue;
-}
-
-.vinyl{
-	transition: transform .2s;
-}
-
-.vinyl:hover{
-	color: red;
+.hover:hover{
 	transform: scale(1.01);
 }
 
-#searchHeader:hover{
-	transform: scale(1.1);
-}
-
-h4:hover{
+.item-hover:hover{
+	color:green;
 	transform: scale(1.01);
 }

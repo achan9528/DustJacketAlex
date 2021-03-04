@@ -27,7 +27,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 @Controller
 public class TestController {
 	
-	private String spotifyAccessCode = "Bearer BQDfjes5Bul5m1XRrZrvQX9e1len5REdltmYAOZ8r7uQa1tcBe5MR7jjbyAASKh30d1aEoACMiovBn9n19I";
+	private String spotifyAccessCode = "Bearer BQA2lBz6FbuZ480TJyWeXFGXubimQ2gCCDWNsm60IuX_-YQ9fitAbZ5ImD4xBHxs5pl-k0GbAt5uxwP3z0E";
 	
 	@RequestMapping("/")
 	public String index() {
@@ -98,6 +98,47 @@ public class TestController {
 		}
 		
 		return "search.jsp";
+	}
+	
+	@RequestMapping("/addSongToVinyl")
+	@ResponseBody
+	public String test(){
+		return "test";
+	}
+	
+	@RequestMapping("/recommendation")
+	@ResponseBody
+	public String getRecommendation(Model model,
+			@RequestParam("artistIds") String artistIds) {
+		
+		System.out.println(artistIds);
+		String[] artists = artistIds.split(",");
+		System.out.println(artists[0].toString());
+		
+		String uri = "https://api.spotify.com/v1/artists/" + artists[0] + "/top-tracks?market=US";
+		
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest.newBuilder()
+				.header("Accept", "application/json")
+				.header("Content-Type", "application/json")
+				.header("Authorization", spotifyAccessCode)
+				.uri(URI.create(uri))
+				.build();
+		try {
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+//			model.addAttribute("apiData", response.body());
+			return response.body();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			model.addAttribute("apiData", e);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			model.addAttribute("apiData", e);
+		}
+		
+		return "getRecommendation()";
 	}
 	
 	private String convertToCSL(String x) {

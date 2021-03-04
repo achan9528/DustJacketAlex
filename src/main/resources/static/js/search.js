@@ -32,9 +32,9 @@ $(document).ready(function(){
 				console.log(temp[option]['items'][0].name);
 				$("#gallery").empty();
 				if (option=="tracks"){
-					var galleryHeader = "<div id='galleryHeader' class='row' style='display:none;'><h2 class='col'><span class='text-white bg-dark'>Song Title </span>& Related Artists <span class='text-muted'>& Related Album</span></h2><h2 class='col-3 text-right text-muted' id='searchHeader'>Search</h2></div>";
+					var galleryHeader = "<div id='galleryHeader' class='row' style='display:none;'><h2 class='col'><span class='text-white bg-dark'>Song Title </span>& Related Artists <span class='text-muted'>& Related Album</span></h2><h2 class='col-3 text-right text-muted' id='searchHeader'>Search Again</h2></div>";
 				} else{
-					var galleryHeader = "<div id='galleryHeader' class='row' style='display:none;'><h2 class='col'><span class='text-white bg-dark'>Artist </span>& Related Genres</h2><h2 class='col-3 text-right text-muted' id='searchHeader'>Search</h2></div>";
+					var galleryHeader = "<div id='galleryHeader' class='row' style='display:none;'><h2 class='col'><span class='text-white bg-dark'>Artist </span>& Related Genres</h2><h2 class='col-3 text-right text-muted' id='searchHeader'>Search Again</h2></div>";
 				}
 				$("#gallery").append(galleryHeader);
 				$("#galleryHeader").fadeIn("slow");
@@ -59,7 +59,18 @@ $(document).ready(function(){
 						secondField = secondField.substring(0, secondField.length - 2);
 						
 						var thirdField = temp[option]['items'][i]['album'].name;
-						external_link = temp[option]['items'][i]['external_urls']['spotify'];	
+						external_link = temp[option]['items'][i]['external_urls']['spotify'];
+						
+						var testHTML = `
+							<ul class='options' style='display:none;' id="options_${i}">
+								<li class='addToVinyl hover' id='addToVinyl_${i}'><h5>Add to A Vinyl</h5></li>
+								<li class='saveToPlaylist hover' id='saveToPlaylist_${i}'><h5>Save to A Playlist</h5></li>
+								<li class='preview hover' id='preview_${i}'>
+									<h5 onclick="previewTrack('${external_link}')">preview in spotify</h5>
+								</li>
+							</ul>
+						`
+							
 					} else{
 						console.log("made it");
 						var secondFieldList = temp[option]['items'][i]['genres'];
@@ -75,30 +86,28 @@ $(document).ready(function(){
 ////						}
 //						
 ////						thirdField = thirdField.substring(0, thirdField.length - 2);
-						
+
+						var testHTML = `
+							<ul class='options' style='display:none;' id="options_${i}">
+								<li class='albums hover' id='albums_${i}'><h5>Albums</h5></li>
+								<li class='top_tracks hover' id='topTracks_${i}'><h5>Top tracks</h5></li>
+								<li class='preview_artist hover' id='previewArtist_${i}'>
+									<h5 onclick="previewTrack('${external_link}')">preview in spotify</h5>
+								</li>
+							</ul>
+						`
 					}
 					
 					
 					var html = `
 						<div class="expandable" id="expandable_${i}">
-						<h4 class="expandable" id=artist_${i}>
+						<h4 class="expandable hover" id=artist_${i}>
 						<span class="text-white bg-dark">${firstField}</span>
 						<span class="expandable">${secondField}</span>
 						<span class="text-muted expandable">${thirdField}</span>
 						</h4>
 						</div>`;
 					
-					
-					var testHTML = `
-					<ul class='options' style='display:none;' id="options_${i}">
-						<li class='addToVinyl' id='addToVinyl_${i}'><h5>Add to A Vinyl</h5></li>
-						<li class='saveToPlaylist' id='addToVinyl_${i}'><h5>Save to A Playlist</h5></li>
-						<li class='preview' id='preview_${i}'>
-							<h5 onclick="previewTrack('${external_link}')">preview in spotify</h5>
-						</li>
-					</ul>
-					
-					`
 					var htmlID = `#expandable_${i}`
 					
 					$("#gallery").append(sectionHTML);
@@ -140,17 +149,17 @@ $(document).ready(function(){
 	$(document.body).on("click", ".addToVinyl",function(e){
 		e.stopPropagation();
 		console.log("clicked addToVinyl");
-		var optionListId = "optionList_" + $(this).prop("id").split("_")[1];
+		var optionListId = "vinylList_" + $(this).prop("id").split("_")[1];
 		var optionListSelector = "#" + optionListId;
 		var optionList = `
 			<ul style="display:none;" id=${optionListId}>
-				<li class="vinyl"><h5>Option 1</h5></li>
-				<li class="vinyl"><h5>Option 2</h5></li>
-				<li class="vinyl"><h5>Option 3</h5></li>
+				<li class="vinyl item-hover"><h5>Option 1</h5></li>
+				<li class="vinyl item-hover"><h5>Option 2</h5></li>
+				<li class="vinyl item-hover"><h5>Option 3</h5></li>
 			</ul>
 		`
 		$(this).append(optionList)
-		$(optionListSelector).toggle("slide","slow");
+		$(optionListSelector).toggle("fade");
 	});
 	
 	// submits song information to addToVinyl route and displays alert
@@ -158,11 +167,92 @@ $(document).ready(function(){
 		e.stopPropagation();
 		console.log("clicked vinyl");
 		console.log("successfully added song to Vinyl");
+		console.log($(this).prop("tagName"));
+		var trackSelectedId = $(this).parent().parent().parent().prop("id").split("_")[1];
+		var trackSelected = data['tracks']['items'][trackSelectedId];
+		var trackArtists = trackSelected['artists'];
+		var trackArtistsString = "";
+		for (var i = 0; i < trackArtists.length; i++){
+			trackArtistsString += trackArtists[i].id + ",";
+		}
 		var alert = "<p id='alert' style='display:none;' class='alert alert-success' role='alert'>Success!</p>";
-		var temp = $(this).parent().parent().prepend(alert);
-		$("#alert").toggle("slide","slow",function(){
-			$("#alert").toggle("slide",2000);
+		var temp = $(this).parent().parent().parent().prepend(alert);
+		$.ajax({
+			url: '/addSongToVinyl',
+			data: {},
+			success: function(){
+				
+				// add Vinyl route through some ajax call
+				
+				// get recommendation through another ajax call
+				$.ajax({
+					url:"/recommendation",
+					data:{
+						'artistIds': trackArtistsString,
+					},
+					success: function(e){
+						console.log("here is another recommmendation");
+						var recommendationData = JSON.parse(e);
+						console.log(recommendationData);
+						var recommendedSong = recommendationData['tracks'][3].name;
+						console.log(e['tracks']);
+						console.log(recommendedSong);
+						var successString = "Success! Have you heard the song \"" + recommendedSong + "\" as well?";
+						$("#alert").text(successString);
+					}, error: function(e){
+						console.log("no recommendation retrieved");
+					}
+				})
+				
+				// alert user of success
+				console.log("successfully added song to Vinyl");
+				$("#alert").toggle("slide","slow",function(){
+					setTimeout(function(){
+						$("#alert").toggle("slide","slow")
+						}, 4000);
+					setTimeout(function(){
+						$("#alert").remove();	
+					}, 5000);
+				});
+			}, error: function(){
+				console.log("did not add song to Vinyl");
+				var alert = "<p id='alert' class='alert alert-danger' role='alert'>Uh oh!</p>";
+				var temp = $("#mainContent").prepend(alert);
+				setTimeout(function(){
+					$("#alert").toggle("fade")}, 2000);
+			}
 		})
+	});
+	
+	// opens up list of user playlist options
+	$(document.body).on("click", ".saveToPlaylist",function(e){
+		e.stopPropagation();
+		console.log("clicked addToPlaylist");
+		var optionListId = "playlistList_" + $(this).prop("id").split("_")[1];
+		var optionListSelector = "#" + optionListId;
+		var optionList = `
+			<ul style="display:none;" id=${optionListId}>
+				<li class="playlist item-hover"><h5>Option 1</h5></li>
+				<li class="playlist item-hover"><h5>Option 2</h5></li>
+				<li class="playlist item-hover"><h5>Option 3</h5></li>
+			</ul>
+		`
+		$(this).append(optionList)
+		$(optionListSelector).toggle("fade");
+	});
+	
+	// submits song information to addToPlaylist route and displays alert
+	$(document.body).on("click", ".playlist",function(e){
+		e.stopPropagation();
+		console.log("clicked playlist");
+		console.log("successfully added song to Playlist");
+		var alert = "<p id='alert' style='display:none;' class='alert alert-success' role='alert'>Success!</p>";
+		var temp = $(this).parent().parent().parent().prepend(alert);
+		$("#alert").toggle("slide","slow",function(){
+			setTimeout(function(){
+				$("#alert").toggle("slide","slow")
+				}, 1000);
+		});
 			
 //		$.ajax({
 //			url: '/addSongToVinyl',
@@ -182,20 +272,6 @@ $(document).ready(function(){
 //			}
 //		})
 	});
-	
-//	// opens up preview for sound
-//	$(document.body).on("click", ".preview",function(e){
-//		e.stopPropagation();
-//		console.log("clicked preview");
-//		var external_link = $(this).data('el');
-//		console.log($(this).prop("tagName"));
-//		console.log($(this).prop("id"));
-//		console.log($(this).data('el'));
-//		console.log($(this).attr("data-el"));
-//		window.open(external_link, '_blank');
-//	});
-	
-	
 	
 	$(document).click(function(e){ console.log(e.target);});
 })   
