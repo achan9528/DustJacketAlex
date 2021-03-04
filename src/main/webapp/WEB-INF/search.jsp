@@ -11,6 +11,7 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="/css/search.css">
 <!--     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 <!--     <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'></script> -->
     <script src="//code.jquery.com/jquery-1.12.4.js"></script>
@@ -26,24 +27,27 @@
 </head>
 <body>
 	<div class="container">
-		<div>
-			<a href="/logout">Logout</a>
-			<a href="/tasks">Dust Jacket</a>
-		</div>
-		<div class="row">
+		<div class="row" id="mainContent">
 			<form action="/" method="post" id="searchForm">
 				<div class="form-group">
 					<label for="searchBar">Search:</label>
 					<input type="text" name="searchBar" id="searchBar">
-				</div>
-				<div class="form-group">
-					<label class="btn btn-outline-success" for="searchSongs">By Song</label>
-					<input type="radio" class="btn btn-check" name="searchBarOption" id="searchSongs" autocomplete="off" value="tracks">
 					
+<!-- 					<input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked> -->
+<!-- 					<label class="btn btn-outline-success" for="success-outlined">Checked success radio</label> -->
+					
+<!-- 					<input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off"> -->
+<!-- 					<label class="btn btn-outline-danger" for="danger-outlined">Danger radio</label> -->
+					
+					<input type="radio" class="btn btn-check searchBarOption" name="options-outlined" id="searchSongs" autocomplete="off" value="tracks" checked>
+					<label class="btn btn-outline-success" for="searchSongs">By Song</label>
+					
+					<input type="radio" class="btn btn-check searchBarOption" name="options-outlined" id="searchArtists" autocomplete="off" value="artists">					
 					<label class="btn btn-outline-danger" for="searchArtists">By Artist</label>
-					<input type="radio" class="btn btn-check" name="searchBarOption" id="searchArtists" autocomplete="off" value="artists" checked>
+
+					
+					<button class="btn btn-primary">Submit</button>
 				</div>
-				<button class="btn btn-primary">Submit</button>
 			</form>
 			<div>
 				<div id="gallery" style="display:block;">

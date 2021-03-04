@@ -27,7 +27,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 @Controller
 public class TestController {
 	
-	private String spotifyAccessCode = "Bearer BQCz5yh0My5FKwxxlRqoVmFTf6bOQPs6taGMAZu_gLktR_Ca3QVZsYxCVSbJZi9iPKUhYMyss-E5OrDJFzw";
+	private String spotifyAccessCode = "Bearer BQDfjes5Bul5m1XRrZrvQX9e1len5REdltmYAOZ8r7uQa1tcBe5MR7jjbyAASKh30d1aEoACMiovBn9n19I";
 	
 	@RequestMapping("/")
 	public String index() {

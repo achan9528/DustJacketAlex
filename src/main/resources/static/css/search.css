@@ -1,0 +1,20 @@
+li:hover{
+	color: blue;
+}
+
+.vinyl{
+	transition: transform .2s;
+}
+
+.vinyl:hover{
+	color: red;
+	transform: scale(1.01);
+}
+
+#searchHeader:hover{
+	transform: scale(1.1);
+}
+
+h4:hover{
+	transform: scale(1.01);
+}
