@@ -23,11 +23,22 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.http.*;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.io.BufferedReader;
 //JSON Parsing library
+
+import java.net.URL;
+import java.net.URLConnection;
+import javax.net.ssl.HttpsURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+
+
 @Controller
 public class TestController {
 	
-	private String spotifyAccessCode = "Bearer BQA2lBz6FbuZ480TJyWeXFGXubimQ2gCCDWNsm60IuX_-YQ9fitAbZ5ImD4xBHxs5pl-k0GbAt5uxwP3z0E";
+	private String spotifyAccessCode = "Bearer BQA1X6sO8n6Zas7mLZ2YHmyypKYpILjJ1_rt_MUF4_306F1eZuRfK19wigXPYCKie1cDnNMeTumpkLjPzGA";
 	
 	@RequestMapping("/")
 	public String index() {
@@ -66,6 +77,11 @@ public class TestController {
 		}
 		
 		return "search.jsp";
+	}
+	
+	@RequestMapping("/artist")
+	public String artistPage() {
+		return "artist.jsp";
 	}
 	
 	@RequestMapping("/searchAPI")
@@ -141,6 +157,90 @@ public class TestController {
 		return "getRecommendation()";
 	}
 	
+	@RequestMapping("/searchAPI8")
+	@ResponseBody
+	public String searchArtists8(Model model,
+			@RequestParam("searchBar") String keywords) {
+		
+		String kws = convertToCSL(keywords);
+		String uri = "https://api.spotify.com/v1/search?type=artist,track&q=" + kws;
+				
+		URL url;
+		HttpsURLConnection con;
+		try {
+			
+			// establishes connection
+			url = new URL(uri);
+			con = (HttpsURLConnection) url.openConnection();
+			// sets the parameters and headers
+			con.setRequestMethod("GET");
+			con.setDoOutput(true);
+			con.setRequestProperty("Accept", "application/json");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", spotifyAccessCode);
+//			// sets a reader for the input stream
+//			reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//			// reads each line
+//			String line = reader.readLine();
+			
+			return print_content(con);
+			
+			
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		}
+
+	}
+	
+	@RequestMapping("/recommendation8")
+	@ResponseBody
+	public String getRecommendation8(Model model,
+			@RequestParam("artistIds") String artistIds) {
+		
+		System.out.println(artistIds);
+		String[] artists = artistIds.split(",");
+		System.out.println(artists[0].toString());
+		
+		String uri = "https://api.spotify.com/v1/artists/" + artists[0] + "/top-tracks?market=US";
+				
+		URL url;
+		HttpsURLConnection con;
+		try {
+			
+			// establishes connection
+			url = new URL(uri);
+			con = (HttpsURLConnection) url.openConnection();
+			// sets the parameters and headers
+			con.setRequestMethod("GET");
+			con.setDoOutput(true);
+			con.setRequestProperty("Accept", "application/json");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", spotifyAccessCode);
+//			// sets a reader for the input stream
+//			reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//			// reads each line
+//			String line = reader.readLine();
+			
+			return print_content(con);
+			
+			
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		}
+	}
+	
 	private String convertToCSL(String x) {
 		String[] words = x.split(",");
 		String kws = "";
@@ -161,6 +261,35 @@ public class TestController {
 		kws = kws.substring(0, kws.length()-1);
 		return kws;
 	}
+	
+   private String print_content(HttpsURLConnection con){
+	    if(con!=null){
+	            
+	    try {
+	        
+	       System.out.println("****** Content of the URL ********");			
+	       BufferedReader br = 
+	        new BufferedReader(
+	            new InputStreamReader(con.getInputStream()));
+	                
+	       String input;
+	       String return_value = "";
+	                
+	       while ((input = br.readLine()) != null){
+	          System.out.println(input);
+	          return_value += input;
+	       }
+	       br.close();
+	       return return_value;
+	                
+	    } catch (IOException e) {
+	       e.printStackTrace();
+	       return e.toString();
+	    }
+	            
+	       }
+	   return "no connection";
+   }
 	
 }
 

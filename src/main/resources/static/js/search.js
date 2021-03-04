@@ -21,7 +21,7 @@ $(document).ready(function(){
 		
 		$("#searchForm").toggle("explode");
 		$.ajax({
-			url: "/searchAPI",
+			url: "/searchAPI8",
 			data: {'searchBar': t},
 			success: function(result){
 				console.log("success");
@@ -186,7 +186,7 @@ $(document).ready(function(){
 				
 				// get recommendation through another ajax call
 				$.ajax({
-					url:"/recommendation",
+					url:"/recommendation8",
 					data:{
 						'artistIds': trackArtistsString,
 					},
@@ -253,24 +253,13 @@ $(document).ready(function(){
 				$("#alert").toggle("slide","slow")
 				}, 1000);
 		});
-			
-//		$.ajax({
-//			url: '/addSongToVinyl',
-//			data: {},
-//			success: function(){
-//				console.log("successfully added song to Vinyl");
-//				var alert = "<p id='alert' class='alert alert-success' role='alert'>Success!</p>";
-//				var temp = $("#mainContent").prepend(alert);
-//				setTimeout(function(){
-//					$("#alert").toggle("fade")}, 2000);
-//			}, error: function(){
-//				console.log("did not add song to Vinyl");
-//				var alert = "<p id='alert' class='alert alert-danger' role='alert'>Success!</p>";
-//				var temp = $("#mainContent").prepend(alert);
-//				setTimeout(function(){
-//					$("#alert").toggle("fade")}, 2000);
-//			}
-//		})
+	});
+	
+	// go to the albums page
+	$(document.body).on("click", ".albums",function(e){
+		e.stopPropagation();
+		$(".container").toggle("explode");
+		window.location.href = "/artist";
 	});
 	
 	$(document).click(function(e){ console.log(e.target);});
