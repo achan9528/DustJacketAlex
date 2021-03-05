@@ -2,12 +2,36 @@ function previewTrack(external_link){
 	window.open(external_link, '_blank');
 }
 
+function mainSearchPage(){
+	$.ajax({
+		url:"/getPageContent",
+		data: {
+			'title': 'mainSearchPage'
+		}, success: function(e){
+			$(".container").toggle("slide");
+			setTimeout(function(){
+				$(".container").empty();
+				$(".container").append(e);	
+			}, 1000);
+		}, error: function(e){
+			console.log("couldn't grab the html");
+		}, complete: function(){
+			
+			setTimeout(function(){
+				$(".container").toggle("slide", "slow");	
+				
+			}, 1000);
+			
+		}	
+	})
+}
+
 $(document).ready(function(){
 	var data; // this holds the spotify data and gets defned in the
 			// form submission and ajax call
+	var previousPageHTML; // for when you move to the artist page
 	
-	
-	$("#searchForm").submit(function(event){
+	$(document.body).on("submit", "#searchForm", function(event){
 		event.preventDefault();
 		var t = $("#searchBar").val();
 		var options = document.getElementsByClassName('searchBarOption');
@@ -258,9 +282,46 @@ $(document).ready(function(){
 	// go to the albums page
 	$(document.body).on("click", ".albums",function(e){
 		e.stopPropagation();
-		$(".container").toggle("explode");
-		window.location.href = "/artist";
+		var artistIndex = $(this).parent().parent().parent().prop("id").split("_")[1];
+		var artistSelectedId = data['artists']['items'][artistIndex].id;
+		console.log(artistSelectedId);
+		$.ajax({
+			url: "/artistAlbums8",
+			data: {
+				'artist_id': artistSelectedId
+			},
+			success:function(e){
+				data = JSON.parse(e);
+			}, error: function(e){
+				console.log("not redirected");
+			}, complete: function(){
+				$.ajax({
+					url: "/getPageContent",
+					data: {
+						'title': 'artistPage',	
+					}, success: function(e){
+						console.log("rendering new page");
+						$(".container").toggle("fade", "slow");
+						setTimeout(function(){
+							previousPageHTML =$(".container").html; 
+							$(".container").empty();
+							$(".container").append(e);	
+						}, 1000)
+						console.log("appended");
+					}, error: function(e){
+						console.log("couldn't grab the html");
+					}, complete: function(){
+						setTimeout(function(){
+							$(".container").toggle("fade", "slow");
+						}, 1000);
+//						$(".container").toggle("fade", "slow");
+						console.log("second fade");
+					}	
+				})
+			}
+		})
 	});
 	
+	// show what is clicked on the page and print to console. Test stuff
 	$(document).click(function(e){ console.log(e.target);});
 })   

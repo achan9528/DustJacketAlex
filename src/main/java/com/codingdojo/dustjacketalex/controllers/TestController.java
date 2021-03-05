@@ -7,22 +7,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.beans.factory.annotation.Autowired;
+
 //import javax.validation.Valid;
 import org.springframework.ui.Model;
 //Needed user-defined classes
-//import com.codingdojo.taskmanager.models.*;
-//import com.codingdojo.taskmanager.services.TaskManagerService;
-//import com.codingdojo.taskmanager.validator.*;
 //Other Java classes needed
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.*;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.Charset;
 import java.io.BufferedReader;
 //JSON Parsing library
 
@@ -34,11 +33,16 @@ import java.net.ProtocolException;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 
+import org.springframework.util.StreamUtils;
+
 
 @Controller
 public class TestController {
 	
-	private String spotifyAccessCode = "Bearer BQA1X6sO8n6Zas7mLZ2YHmyypKYpILjJ1_rt_MUF4_306F1eZuRfK19wigXPYCKie1cDnNMeTumpkLjPzGA";
+	private String spotifyAccessCode = "Bearer BQCp1goDI3lWuiFMWqRgFKAUj9pLWzRv3syj4DGUEZncUlVxCsdnqItVQh9MP2FP4QPWW5vG0AaQONYBIjA";
+	
+	@Autowired
+	private ResourceLoader resourceLoader;
 	
 	@RequestMapping("/")
 	public String index() {
@@ -80,7 +84,9 @@ public class TestController {
 	}
 	
 	@RequestMapping("/artist")
-	public String artistPage() {
+	public String artistPage(@RequestParam("artistID") String artistID,
+			Model model) {
+		model.addAttribute("artistID", artistID);
 		return "artist.jsp";
 	}
 	
@@ -241,6 +247,68 @@ public class TestController {
 		}
 	}
 	
+	@RequestMapping("/artistAlbums8")
+	@ResponseBody
+	public String getArtistDetails(Model model,
+			@RequestParam("artist_id") String artistId) {
+		
+		String uri = "https://api.spotify.com/v1/artists/" + artistId + "/albums";
+				
+		URL url;
+		HttpsURLConnection con;
+		try {
+			
+			// establishes connection
+			url = new URL(uri);
+			con = (HttpsURLConnection) url.openConnection();
+			// sets the parameters and headers
+			con.setRequestMethod("GET");
+			con.setDoOutput(true);
+			con.setRequestProperty("Accept", "application/json");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", spotifyAccessCode);
+			
+			return print_content(con);
+			
+			
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		}
+		
+	}
+	
+	@RequestMapping("/getPageContent")
+	@ResponseBody
+	public String getArtistDetails(
+			@RequestParam("title") String jspTitle) {
+	
+		String content;
+		try {
+			content = StreamUtils.copyToString(resourceLoader.getResource("/WEB-INF/"+jspTitle+".jsp").getInputStream(), Charset.defaultCharset()  );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			content = e.toString();
+		}
+		System.out.println(content);
+		return content;
+//		try {
+//			msg = StreamUtils.copyToString( new ClassPathResource("src/main/webapp/WEB-INF/browsePage.jsp").getInputStream(), Charset.defaultCharset()  );
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			msg = e.toString();
+//		}
+//		return msg;
+		
+	}
+	
 	private String convertToCSL(String x) {
 		String[] words = x.split(",");
 		String kws = "";
@@ -290,7 +358,33 @@ public class TestController {
 	       }
 	   return "no connection";
    }
+   
 	
+   private String getAccessToken() {
+	   	URL url;
+		HttpsURLConnection con;
+		String uri = "https://accounts.spotify.com/api/token";
+		try {
+			// establishes connection
+			url = new URL(uri);
+			con = (HttpsURLConnection) url.openConnection();
+			// sets the parameters and headers
+			con.setRequestMethod("GET");
+			con.setDoOutput(true);
+			con.setRequestProperty("Grant-Type", "client_credentials");
+			con.setRequestProperty("Authorization", "NDNmYjY4YzYzNmVmNGU3NGE3NWYzYjYzYWM2NTkzNTk6YTJjNWEzMjBmYzI5NDQ2MGJlY2FjN2RiNTZiNzdiNDk=");
+			return "Test";
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		}
+		
+   }
 }
 
 // first this step

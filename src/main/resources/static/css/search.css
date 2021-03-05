@@ -6,3 +6,7 @@
 	color:green;
 	transform: scale(1.01);
 }
+
+.fadeOnStart{
+/* 	display:none; */
+}
