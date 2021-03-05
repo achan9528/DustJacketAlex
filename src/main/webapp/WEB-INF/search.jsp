@@ -26,7 +26,7 @@
     <title>DskJckt</title>
 </head>
 <body>
-	<div class="container">
+	<div class="container" id="container">
 		<div class="row" id="mainContent">
 			<form action="/" method="post" id="searchForm">
 				<div class="form-group">

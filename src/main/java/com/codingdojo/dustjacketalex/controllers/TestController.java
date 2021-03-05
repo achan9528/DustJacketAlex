@@ -39,7 +39,7 @@ import org.springframework.util.StreamUtils;
 @Controller
 public class TestController {
 	
-	private String spotifyAccessCode = "Bearer BQCp1goDI3lWuiFMWqRgFKAUj9pLWzRv3syj4DGUEZncUlVxCsdnqItVQh9MP2FP4QPWW5vG0AaQONYBIjA";
+	private String spotifyAccessCode = "Bearer BQBVtply_OtW-DOfNkIWuKqT9gCzxtvnvRqhMgQ9iatxwrGe8ThU9QwMsfwvB1eJYt_aTFeKXpc20eugRB0";
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
@@ -247,12 +247,48 @@ public class TestController {
 		}
 	}
 	
-	@RequestMapping("/artistAlbums8")
+	@RequestMapping("/artistDetails8")
 	@ResponseBody
 	public String getArtistDetails(Model model,
 			@RequestParam("artist_id") String artistId) {
 		
-		String uri = "https://api.spotify.com/v1/artists/" + artistId + "/albums";
+		String uri = "https://api.spotify.com/v1/artists/" + artistId;
+				
+		URL url;
+		HttpsURLConnection con;
+		try {
+			
+			// establishes connection
+			url = new URL(uri);
+			con = (HttpsURLConnection) url.openConnection();
+			// sets the parameters and headers
+			con.setRequestMethod("GET");
+			con.setDoOutput(true);
+			con.setRequestProperty("Accept", "application/json");
+			con.setRequestProperty("Content-Type", "application/json");
+			con.setRequestProperty("Authorization", spotifyAccessCode);
+			
+			return print_content(con);
+			
+			
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return e1.toString();
+		}
+		
+	}
+	
+	@RequestMapping("/artistTopTracks8")
+	@ResponseBody
+	public String getArtistTopTracks(Model model,
+			@RequestParam("artist_id") String artistId) {
+		
+		String uri = "https://api.spotify.com/v1/artists/" + artistId + "/top-tracks?market=US";
 				
 		URL url;
 		HttpsURLConnection con;

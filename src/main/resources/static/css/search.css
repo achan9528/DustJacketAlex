@@ -7,6 +7,10 @@
 	transform: scale(1.01);
 }
 
-.fadeOnStart{
-/* 	display:none; */
+.no-bullets{
+	list-style-type: none;
+}
+
+.hide-start{
+	display: none;
 }
