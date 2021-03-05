@@ -19,6 +19,8 @@ $(document).ready(function(){
 			}
 		}
 		
+		option= $("#searchOption").val();
+		
 		$("#searchForm").toggle("explode");
 		$.ajax({
 			url: "/searchAPI8",
@@ -59,14 +61,18 @@ $(document).ready(function(){
 						secondField = secondField.substring(0, secondField.length - 2);
 						
 						var thirdField = temp[option]['items'][i]['album'].name;
-						external_link = temp[option]['items'][i]['external_urls']['spotify'];
+				
+						external_link = temp[option]['items'][i].preview_url;
+						if (external_link == null){
+							external_link = temp[option]['items'][i]['external_urls']['spotify'];
+						}
 						
 						var testHTML = `
 							<ul class='options no-bullets hide-start' id="options_${i}">
 								<li class='addToVinyl item-hover' id='addToVinyl_${i}'><h5>Add to A Vinyl</h5></li>
 								<li class='saveToPlaylist item-hover' id='saveToPlaylist_${i}'><h5>Save to A Playlist</h5></li>
 								<li class='preview item-hover' id='preview_${i}'>
-									<h5 onclick="previewTrack('${external_link}')">preview in spotify</h5>
+									<h5 onclick="previewTrack('${external_link}')">preview song</h5>
 								</li>
 							</ul>
 						`
@@ -86,7 +92,7 @@ $(document).ready(function(){
 ////						}
 //						
 ////						thirdField = thirdField.substring(0, thirdField.length - 2);
-
+						external_link = temp[option]['items'][i]['external_urls']['spotify'];
 						var testHTML = `
 							<ul class="options no-bullets hide-start" id="options_${i}">
 								<li class='albums item-hover' id='albums_${i}'><h5>More Details</h5></li>
@@ -267,8 +273,8 @@ $(document).ready(function(){
 			},
 			success:function(e){
 				previousData = data;
-				artistTopTrackdata = JSON.parse(e);
-				console.log(artistTopTrackdata);
+				artistTopTrackData = JSON.parse(e);
+				console.log(artistTopTrackData);
 			}, error: function(e){
 				console.log("not redirected");
 			}, complete: function(){
@@ -319,6 +325,16 @@ $(document).ready(function(){
 		});
 	});
 	
+	$(document).on("click", ".track", function(e){
+		e.stopPropagation();
+		$(this).parent().children("ul").first().toggle("fold");	
+	});
+	
+	$(document).on("click", ".topTrack_addToVinyl", function(e){
+		e.stopPropagation();
+		$(this).children("ul").first().toggle("fold");	
+	});
+	
 	// show what is clicked on the page and print to console. Test stuff
 	$(document).click(function(e){ console.log(e.target);});
 	
@@ -360,4 +376,35 @@ function populateArtistPage(artistDetailData, artistTopTrackData){
 	
 	$("#artistHeader").text(artistDetailData['name']);
 	$("#artistHeader").append("<h6 class='text-muted'>" + artistDetailData['followers']['total'] + " people following on Spotify</h6>");
+	
+	
+	for (var i=0; i < artistTopTrackData['tracks'].length; i++){
+		var trackName = artistTopTrackData['tracks'][i].name;
+		var previewLink = artistTopTrackData['tracks'][i].preview_url;
+		if (previewLink == null){
+			previewLink = artistTopTrackData['tracks'][i]['external_urls'].spotify;
+		}
+		var artistsOnTheTrack = artistTopTrackData['tracks'][i]['artists'];
+		var album = artistTopTrackData['tracks'][i]['album']['name'];
+		var htmlString = `
+			<li class='hover'">
+				<h3 class="track" id='topTrack_${i}'>
+					${trackName}
+					<span class="track text-muted" id="topTrack_${i}_album">${album}</span>
+					<span class="track text-muted" id="topTrack_${i}_artists"></span>
+				</h3>
+				<ul class="no-bullets hide-start">	
+					<li class='item-hover' onclick="previewTrack('${previewLink}')">preview song<li>
+					<li class='topTrack_addToVinyl item-hover'>
+						Add to Vinyl
+						<ul class='vinyl_list hide-start no-bullets'>
+							<li class='item-hover'>Option 1</li>
+							<li class='item-hover'>Option 2</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+		`
+		$("#accordion").append(htmlString);
+	}
 }
