@@ -39,7 +39,7 @@ import org.springframework.util.StreamUtils;
 @Controller
 public class TestController {
 	
-	private String spotifyAccessCode = "Bearer BQC-ySnikx_Y5yXFjZlfhtHyUyh7WO637sQ5o-xK8Us5IqPDz4xYcpCc4ygLF_rRYS-OlV9O5QypBFUJfZU";
+	private String spotifyAccessCode = "Bearer BQBIFlLHa8m3i_XekccHBkTNsnau72aD3FHgYAJxoR7HeY71L1x4VBokcDS4JZLyFcHOgs8vH1_zwXXKS-o";
 	
 	@Autowired
 	private ResourceLoader resourceLoader;
@@ -318,6 +318,7 @@ public class TestController {
 		}
 		
 	}
+	
 	
 	@RequestMapping("/getPageContent")
 	@ResponseBody
